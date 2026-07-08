@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MN AnimaT3D</title>
+    <meta name="theme-color" content="#0b0f14" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./assets/icon.svg" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div id="app" class="app-shell" data-workspace="modelagem">
+      <header class="topbar">
+        <button class="brand" id="homeButton" aria-label="Abrir início">
+          <span class="brand-mark" aria-hidden="true">MN</span>
+          <span class="brand-copy">
+            <strong>MN Anima<span>T3D</span></strong>
+            <small>Modelagem e animação 3D</small>
+          </span>
+        </button>
+
+        <nav class="menu-strip" aria-label="Menu principal">
+          <button>Projeto</button>
+          <button>Editar</button>
+          <button>Cena</button>
+          <button>Render</button>
+          <button>Ajuda</button>
+        </nav>
+
+        <nav class="workspace-tabs" aria-label="Áreas de trabalho">
+          <button class="is-active" data-workspace="modelagem">Modelagem</button>
+          <button data-workspace="escultura">Escultura</button>
+          <button data-workspace="animacao">Animação</button>
+          <button data-workspace="renderizacao">Renderização</button>
+          <button data-workspace="composicao">Composição</button>
+          <button data-workspace="scripts">Scripts</button>
+        </nav>
+
+        <div class="window-cluster" aria-label="Janela">
+          <button aria-label="Comunidade">CO</button>
+          <button aria-label="Minimizar">-</button>
+          <button aria-label="Maximizar">□</button>
+          <button aria-label="Fechar">×</button>
+        </div>
+      </header>
+
+      <section class="workspace-banner">
+        <div>
+          <p id="workspaceKicker">Oficina ativa</p>
+          <h1 id="workspaceTitle">Modelagem</h1>
+        </div>
+        <div class="banner-actions">
+          <button id="newProjectButton" class="ghost-button">Novo</button>
+          <button id="prefsButton" class="ghost-button">Preferências</button>
+          <button id="saveRenderButton" class="primary-button">Salvar imagem</button>
+        </div>
+      </section>
+
+      <main class="editor-grid">
+        <aside class="tool-rail" aria-label="Ferramentas">
+          <div id="toolList" class="tool-list"></div>
+          <div class="rail-divider"></div>
+          <button class="tool-button" id="focusButton" aria-label="Enquadrar seleção" title="Enquadrar seleção">◎</button>
+          <button class="tool-button" id="toggleGridButton" aria-label="Grades" title="Grades">#</button>
+        </aside>
+
+        <section class="viewport-column">
+          <div class="context-bar" id="contextBar"></div>
+          <div class="viewport-shell" id="viewportShell">
+            <canvas id="viewportCanvas"></canvas>
+            <div class="viewport-label">
+              <strong id="viewName">Perspectiva do usuário</strong>
+              <span id="viewStats">Coleção | Personagem</span>
+            </div>
+            <div class="axis-widget" aria-hidden="true">
+              <span class="axis axis-z">Z</span>
+              <span class="axis axis-y">Y</span>
+              <span class="axis axis-x">X</span>
+            </div>
+            <div id="sculptCursor" class="sculpt-cursor" aria-hidden="true"></div>
+            <div id="nodeOverlay" class="node-overlay" aria-hidden="true"></div>
+            <div class="viewport-fab">
+              <button id="resetCameraButton" aria-label="Redefinir câmera" title="Redefinir câmera">⌖</button>
+              <button id="shadeButton" aria-label="Modo de visualização" title="Modo de visualização">◐</button>
+              <button id="fullscreenButton" aria-label="Tela cheia" title="Tela cheia">⛶</button>
+            </div>
+          </div>
+
+          <section class="timeline" id="timeline">
+            <div class="transport">
+              <button id="playButton" aria-label="Reproduzir">▶</button>
+              <button id="prevFrameButton" aria-label="Quadro anterior">‹</button>
+              <button id="nextFrameButton" aria-label="Próximo quadro">›</button>
+              <select id="timelineMode" aria-label="Modo da linha do tempo">
+                <option>Dope Sheet</option>
+                <option>Curvas</option>
+                <option>Marcadores</option>
+              </select>
+              <output id="frameReadout">72</output>
+            </div>
+            <div class="time-track">
+              <input id="frameSlider" type="range" min="1" max="250" value="72" aria-label="Quadro" />
+              <div id="keyRows" class="key-rows"></div>
+            </div>
+          </section>
+        </section>
+
+        <aside class="side-panel">
+          <section class="panel-block">
+            <div class="panel-title">
+              <strong>Cena</strong>
+              <button id="addPrimitiveButton" aria-label="Adicionar">+</button>
+            </div>
+            <div class="search-line">
+              <span>⌕</span>
+              <input id="sceneSearch" type="search" placeholder="Buscar camada" />
+            </div>
+            <div id="outliner" class="outliner"></div>
+          </section>
+
+          <section class="panel-block properties-block">
+            <div class="panel-title">
+              <strong id="propertiesTitle">Personagem</strong>
+              <button id="deleteButton" aria-label="Remover selecionado">×</button>
+            </div>
+            <div id="propertiesPanel" class="properties-panel"></div>
+          </section>
+        </aside>
+      </main>
+
+      <footer class="statusbar">
+        <span id="selectionStatus">Selecionar</span>
+        <span id="hintStatus">Arraste para orbitar a vista</span>
+        <span id="sceneStats">Vértices: 24.960 | Faces: 18.420 | Memória: 312 MB</span>
+      </footer>
+    </div>
+
+    <div id="startOverlay" class="overlay is-visible">
+      <section class="start-panel" role="dialog" aria-modal="true" aria-labelledby="startTitle">
+        <button class="close-button" data-close-overlay aria-label="Fechar">×</button>
+        <div class="start-copy">
+          <div class="start-mark">MN</div>
+          <h2 id="startTitle">MN Anima<span>T3D</span></h2>
+          <p>Criação 3D, animação e renderização em uma oficina visual própria.</p>
+          <div class="start-actions">
+            <button class="start-action" data-start-action="new">
+              <span>＋</span>
+              <strong>Novo projeto</strong>
+              <small>Cena pronta para modelar</small>
+            </button>
+            <button class="start-action" data-start-action="example">
+              <span>◇</span>
+              <strong>Exemplo guiado</strong>
+              <small>Personagem com rig</small>
+            </button>
+            <button class="start-action" data-start-action="open">
+              <span>□</span>
+              <strong>Abrir projeto</strong>
+              <small>Importar glTF local</small>
+            </button>
+            <button class="start-action" data-start-action="prefs">
+              <span>⚙</span>
+              <strong>Preferências</strong>
+              <small>Interface e plugins</small>
+            </button>
+          </div>
+        </div>
+        <div class="start-preview">
+          <canvas id="previewCanvas"></canvas>
+          <div class="preview-caption">
+            <strong>ForgeView</strong>
+            <span>Viewport acelerado por Three.js</span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="projectDialog" class="modal" aria-hidden="true">
+      <section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="projectTitle">
+        <button class="close-button" data-close-modal aria-label="Fechar">×</button>
+        <h2 id="projectTitle">Novo projeto</h2>
+        <div class="project-types" id="projectTypes">
+          <button class="project-card is-selected" data-project-type="geral">
+            <span>◇</span>
+            <strong>Geral</strong>
+          </button>
+          <button class="project-card" data-project-type="animacao">
+            <span>⟳</span>
+            <strong>Animação</strong>
+          </button>
+          <button class="project-card" data-project-type="modelagem">
+            <span>▣</span>
+            <strong>Modelagem</strong>
+          </button>
+          <button class="project-card" data-project-type="vfx">
+            <span>✦</span>
+            <strong>VFX</strong>
+          </button>
+        </div>
+        <label class="field-label">
+          Nome do projeto
+          <input id="projectName" value="Meu Projeto MN" />
+        </label>
+        <label class="field-label">
+          Local
+          <input id="projectPath" value="D:\Projetos\MN-AnimaT3D" />
+        </label>
+        <button id="createProjectButton" class="primary-button modal-submit">Criar projeto</button>
+      </section>
+    </div>
+
+    <div id="prefsDialog" class="modal" aria-hidden="true">
+      <section class="modal-panel prefs-panel" role="dialog" aria-modal="true" aria-labelledby="prefsTitle">
+        <button class="close-button" data-close-modal aria-label="Fechar">×</button>
+        <h2 id="prefsTitle">Preferências</h2>
+        <aside class="prefs-nav">
+          <button class="is-active" data-pref-page="interface">Interface</button>
+          <button data-pref-page="viewport">Visualização</button>
+          <button data-pref-page="addons">Addons</button>
+          <button data-pref-page="sistema">Sistema</button>
+        </aside>
+        <div class="prefs-content" id="prefsContent"></div>
+      </section>
+    </div>
+
+    <div id="toast" class="toast" role="status"></div>
+    <input id="fileInput" type="file" accept=".gltf,.glb,.obj" hidden />
+    <script src="./vendor/three.global.js"></script>
+    <script src="./vendor/OrbitControls.global.js"></script>
+    <script src="./src/app.global.js"></script>
+    <script>
+      if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+        navigator.serviceWorker.register("./sw.js");
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,2 @@
+Foi adicionado um workflow do GitHub Actions em .github/workflows/build-apk.yml.
+Ao subir este projeto para o GitHub, ele pode gerar automaticamente o APK em Actions > Gerar APK Android > Run workflow.
